@@ -1,4 +1,4 @@
-module fgc
+module fabric-gen-config
 
 go 1.17
 

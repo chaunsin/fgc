@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fgc/cmd"
+	"fabric-gen-config/cmd"
 )
 
 const version = "0.0.0"

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"fgc/builder"
-	"fgc/parse"
+	"fabric-gen-config/builder"
+	"fabric-gen-config/parse"
 
 	"github.com/spf13/cobra"
 )

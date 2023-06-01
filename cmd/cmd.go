@@ -3,8 +3,8 @@ package cmd
 import (
 	"os"
 
-	"fgc/builder"
-	"fgc/parse/host"
+	"fabric-gen-config/builder"
+	"fabric-gen-config/parse/host"
 
 	"github.com/spf13/cobra"
 )

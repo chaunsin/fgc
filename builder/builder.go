@@ -8,9 +8,9 @@ import (
 	"runtime"
 	"strings"
 
-	"fgc/parse"
-	"fgc/parse/host"
-	"fgc/parse/mspid"
+	"fabric-gen-config/parse"
+	"fabric-gen-config/parse/host"
+	"fabric-gen-config/parse/mspid"
 
 	"gopkg.in/yaml.v3"
 )

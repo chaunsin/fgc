@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"fgc/parse"
-	"fgc/parse/host"
-	"fgc/parse/mspid"
+	"fabric-gen-config/parse"
+	"fabric-gen-config/parse/host"
+	"fabric-gen-config/parse/mspid"
 )
 
 type Path struct {
