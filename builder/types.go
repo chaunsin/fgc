@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"fabric-gen-config/parse"
-	"fabric-gen-config/parse/host"
-	"fabric-gen-config/parse/mspid"
+	"github.com/chaunsin/fabric-gen-config/parse"
+	"github.com/chaunsin/fabric-gen-config/parse/host"
+	"github.com/chaunsin/fabric-gen-config/parse/mspId"
 )
 
 type Path struct {

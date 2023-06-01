@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fabric-gen-config/cmd"
+	"github.com/chaunsin/fabric-gen-config/cmd"
 )
 
 const version = "0.0.0"
