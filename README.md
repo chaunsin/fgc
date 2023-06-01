@@ -1,11 +1,37 @@
 # fgc(fabric-gen-config)
 
-由于fabric证书配置复杂编写配置容易搞错,本人想着便捷于是诞生了此工具,生成sdk链接配置文件
+由于fabric证书配置复杂编写配置容易搞错,本人想着便捷于是诞生了此工具,生成sdk链接配置文件.
+
+# 注意！！！
+
+目前此库还不完善不过可以生成golang可用的配置
+
+# 安装
+
+方式一
+
+```shell
+go install https://github.com/chaunsin/fabric-gen-config
+```
+
+此方式生成的`fgc`二进制可执行程序会放到$GOBIN目录下
+
+方式二
+
+```shell
+git clone https://github.com/chaunsin/fabric-gen-config.git
+cd fabric-gen-config
+make build
+```
+
+执行完之后会在fabric-gen-config目录下生成`fgc`可执行程序,如果有必要我们可以把fgc拷贝到自定一位置比如 /bin 目录下
 
 # 使用
 
+生成golang配置证书
+
 ```shell
-go run main go
+fgc go
 ```
 
 # 功能
