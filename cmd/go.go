@@ -47,19 +47,11 @@ func (s *golangCmd) generate() error {
 	}
 
 	// 模板对象
-	t := builder.New(opts.Config, opts.Options)
-	if err := t.Build(cc); err != nil {
-		return fmt.Errorf("Build:%w", err)
+	b := builder.New(opts.Config, opts.Options)
+	if err := b.Build(cc); err != nil {
+		return fmt.Errorf("Build: %w", err)
 	}
-	var content []byte
-	switch opts.FileType {
-	case "json":
-		content, err = t.JSON()
-	case "yaml":
-		content, err = t.YAML()
-	default:
-		return fmt.Errorf("FileType [%s] is un support", opts.FileType)
-	}
+	content, err := b.Content()
 	if err != nil {
 		return fmt.Errorf("serialize:%w", err)
 	}
