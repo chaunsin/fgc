@@ -106,6 +106,9 @@ type CryptoConfig struct {
 
 // Valid 检验
 func (c *CryptoConfig) Valid() error {
+	if c == nil {
+		return errors.New("CryptoConfig is nil")
+	}
 	if len(c.Orgs) <= 0 {
 		return errors.New("orgs is empty")
 	}
@@ -129,6 +132,24 @@ func (c *CryptoConfig) GetOrderName() []string {
 	var list = make([]string, 0, len(c.Order))
 	for name, _ := range c.Order {
 		list = append(list, string(name))
+	}
+	return list
+}
+
+// GetOrgUser 根据peer组织名称查询有哪些用户
+func (c *CryptoConfig) GetOrgUser(org string) []string {
+	var list = make([]string, 0, len(c.Orgs))
+	for domain, _ := range c.Orgs[OrgName(org)].Users {
+		list = append(list, domain.UserName())
+	}
+	return list
+}
+
+// GetOrderUser 根据order组织名称查询有哪些用户
+func (c *CryptoConfig) GetOrderUser(org string) []string {
+	var list = make([]string, 0, len(c.Orgs))
+	for domain, _ := range c.Order[OrgName(org)].Users {
+		list = append(list, domain.UserName())
 	}
 	return list
 }

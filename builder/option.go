@@ -11,6 +11,7 @@ type Options struct {
 	CA          bool   // 是否开启ca false:关闭(默认) true:开启
 	Metrics     bool   // 是否生成Metrics false:关闭(默认) true:开启
 	Operations  bool   // 是否生成Operations false:关闭(默认) true:开启
+	FileType    string // 生成文件类型 yaml(默认) json
 
 	Language string
 }

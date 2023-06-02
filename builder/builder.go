@@ -25,7 +25,7 @@ func New(c host.Config, o Options) *Builder {
 		log.Fatalln("host:", err)
 	}
 
-	t := &Builder{
+	b := &Builder{
 		opts:                   o,
 		mspId:                  msp,
 		host:                   h,
@@ -36,61 +36,61 @@ func New(c host.Config, o Options) *Builder {
 		Orderers:               make(map[string]Payload, 1),
 		Peers:                  make(map[string]Payload, 2),
 	}
-	return t
+	return b
 }
 
-func (t *Builder) Build(cc *parse.CryptoConfig) error {
+func (b *Builder) Build(cc *parse.CryptoConfig) error {
 	if err := cc.Valid(); err != nil {
 		return fmt.Errorf("Valid:%w", err)
 	}
 
 	// client
-	if err := t.client(cc); err != nil {
+	if err := b.client(cc); err != nil {
 		return fmt.Errorf("client:%w", err)
 	}
 
 	// organizations
-	if err := t.organizations(cc); err != nil {
+	if err := b.organizations(cc); err != nil {
 		return fmt.Errorf("organizations:%w", err)
 	}
 
 	// channels
-	if err := t.channel(cc); err != nil {
+	if err := b.channel(cc); err != nil {
 		return fmt.Errorf("channel:%w", err)
 	}
 
 	// order
-	if err := t.order(cc); err != nil {
+	if err := b.order(cc); err != nil {
 		return fmt.Errorf("order:%w", err)
 	}
 
 	// peers
-	if err := t.peers(cc); err != nil {
+	if err := b.peers(cc); err != nil {
 		return fmt.Errorf("peers:%w", err)
 	}
 
 	// EntityMatchers
-	if err := t.entityMatchers(cc); err != nil {
+	if err := b.entityMatchers(cc); err != nil {
 		return fmt.Errorf("entityMatchers:%w", err)
 	}
 
 	// CertificateAuthorities
-	if t.opts.CA {
-		if err := t.certificateAuthorities(cc); err != nil {
+	if b.opts.CA {
+		if err := b.certificateAuthorities(cc); err != nil {
 			return fmt.Errorf("certificateAuthorities:%w", err)
 		}
 	}
 
 	// Operations
-	if t.opts.CA {
-		if err := t.operations(cc); err != nil {
+	if b.opts.CA {
+		if err := b.operations(cc); err != nil {
 			return fmt.Errorf("operations:%w", err)
 		}
 	}
 
 	// Metrics
-	if t.opts.CA {
-		if err := t.metrics(cc); err != nil {
+	if b.opts.CA {
+		if err := b.metrics(cc); err != nil {
 			return fmt.Errorf("metrics:%w", err)
 		}
 	}
@@ -99,36 +99,54 @@ func (t *Builder) Build(cc *parse.CryptoConfig) error {
 }
 
 // Write .
-func (t *Builder) Write(d []byte) (int, error) {
+func (b *Builder) Write(d []byte) (int, error) {
 	return 0, nil
 }
 
 // Output .
-func (t *Builder) Output(dir string) error {
+func (b *Builder) Output(dir string) error {
 	return nil
 }
 
 // JSON 生成json
-func (t *Builder) JSON() ([]byte, error) {
-	return json.MarshalIndent(t, "  ", " ")
+func (b *Builder) JSON() ([]byte, error) {
+	return json.MarshalIndent(b, "  ", " ")
 }
 
 // YAML 生成yaml
-func (t *Builder) YAML() ([]byte, error) {
+func (b *Builder) YAML() ([]byte, error) {
 	buf := bytes.NewBuffer(nil)
 	enc := yaml.NewEncoder(buf)
 	defer enc.Close()
 	enc.SetIndent(2)
-	if err := enc.Encode(t); err != nil {
+	if err := enc.Encode(b); err != nil {
 		return nil, fmt.Errorf("Encode:%w", err)
 	}
 	return buf.Bytes(), nil
 }
 
+// Content 根据配置类型生成相应格式内容
+func (b *Builder) Content() ([]byte, error) {
+	var (
+		content []byte
+		err     error
+	)
+
+	switch b.opts.FileType {
+	case "json":
+		content, err = b.JSON()
+	case "yaml":
+		fallthrough
+	default:
+		content, err = b.YAML()
+	}
+	return content, err
+}
+
 // client
-func (t *Builder) client(cc *parse.CryptoConfig) error {
+func (b *Builder) client(cc *parse.CryptoConfig) error {
 	var client = Client{
-		Organization: t.opts.OrgName,
+		Organization: b.opts.OrgName,
 		Logging:      Logging{Level: "info"},
 		CryptoConfig: Path{Path: ""},
 		CredentialStore: CredentialStore{
@@ -151,14 +169,14 @@ func (t *Builder) client(cc *parse.CryptoConfig) error {
 	}
 
 	// 如果输入的组织名不存在则随机取一个组织名称
-	if _, ok := cc.Orgs[parse.OrgName(t.opts.OrgName)]; !ok {
+	if _, ok := cc.Orgs[parse.OrgName(b.opts.OrgName)]; !ok {
 		for name, _ := range cc.Orgs {
 			client.Organization = string(name)
 			break
 		}
 	}
 
-	if t.opts.Pem {
+	if b.opts.Pem {
 		// todo:
 		// 1. 考虑可配置 golang为${FABRIC_SDK_GO_PROJECT_PATH}/${CRYPTOCONFIG_FIXTURES_PATH}
 		// 2. 路径改为用户输入得路径
@@ -166,7 +184,7 @@ func (t *Builder) client(cc *parse.CryptoConfig) error {
 	}
 
 	// 开启双tls
-	if t.opts.DoubleTls {
+	if b.opts.DoubleTls {
 		var (
 			clientKeyPem  PemPath
 			clientCertPem PemPath
@@ -175,14 +193,14 @@ func (t *Builder) client(cc *parse.CryptoConfig) error {
 		)
 		// 模糊查询对应的组织并且找到当前组织Admin的证书
 		for name, org := range cc.Orgs {
-			if strings.Contains(string(name), t.opts.OrgName) {
+			if strings.Contains(string(name), b.opts.OrgName) {
 				for domain, user := range org.Users {
-					if domain.UserName() == t.opts.User {
-						clientKeyPem, err = newPemPath(t.opts.Pem, user.TLS.Key)
+					if domain.UserName() == b.opts.User {
+						clientKeyPem, err = newPemPath(b.opts.Pem, user.TLS.Key)
 						if err != nil {
 							return fmt.Errorf("newPemPath:%w", err)
 						}
-						clientCertPem, err = newPemPath(t.opts.Pem, user.TLS.Cert)
+						clientCertPem, err = newPemPath(b.opts.Pem, user.TLS.Cert)
 						if err != nil {
 							return fmt.Errorf("newPemPath:%w", err)
 						}
@@ -205,7 +223,7 @@ func (t *Builder) client(cc *parse.CryptoConfig) error {
 		}
 	}
 
-	t.Client = client
+	b.Client = client
 	return nil
 }
 
@@ -259,7 +277,7 @@ func (t *Builder) client(cc *parse.CryptoConfig) error {
 //
 //    # Needed to load users crypto keys and certs for this org (absolute path or relative to global crypto path, DEV mode)
 //    cryptoPath: ordererOrganizations/example.com/users/{username}@example.com/msp
-func (t *Builder) organizations(cc *parse.CryptoConfig) error {
+func (b *Builder) organizations(cc *parse.CryptoConfig) error {
 	for name, org := range cc.Orgs {
 		var (
 			peers   = make([]string, 0, len(org.Users))
@@ -276,7 +294,7 @@ func (t *Builder) organizations(cc *parse.CryptoConfig) error {
 			log.Printf("[organizations] warn org name not match:%s\n", name)
 		}
 
-		if _, ok := t.Organizations[o]; ok {
+		if _, ok := b.Organizations[o]; ok {
 			continue
 		}
 
@@ -285,21 +303,21 @@ func (t *Builder) organizations(cc *parse.CryptoConfig) error {
 		}
 		oao.Peers = peers
 
-		mspId, ok := t.mspId.GetMspId(string(name))
+		mi, ok := b.mspId.GetMspId(string(name))
 		if !ok {
-			mspId = "{待替换}"
+			mi = "{待替换}"
 			log.Printf("[organizations] mspid not found %s\n", name)
 		}
-		oao.MspId = mspId
+		oao.MspId = mi
 
 		// TODO: 待实现
-		if t.opts.CA {
+		if b.opts.CA {
 			oao.CertificateAuthorities = []string{}
 		}
 
 		for domain, user := range org.Users {
-			if domain.UserName() == t.opts.User {
-				if t.opts.Pem {
+			if domain.UserName() == b.opts.User {
+				if b.opts.Pem {
 					// TODO:
 					// 1. 待确认`{username}`是否是代表程序自动的去找用户,还是说需要我们自己替换用户
 					// 2. cryptoPath 支持绝对路径需要考虑
@@ -308,17 +326,17 @@ func (t *Builder) organizations(cc *parse.CryptoConfig) error {
 					continue
 				}
 
-				keyPem, err = newPemPath(t.opts.Pem, user.Msp.KeyStore.Key)
+				keyPem, err = newPemPath(b.opts.Pem, user.Msp.KeyStore.Key)
 				if err != nil {
 					return fmt.Errorf("newPemPath:%w", err)
 				}
-				certPem, err = newPemPath(t.opts.Pem, user.Msp.SignCerts.Cert)
+				certPem, err = newPemPath(b.opts.Pem, user.Msp.SignCerts.Cert)
 				if err != nil {
 					return fmt.Errorf("newPemPath:%w", err)
 				}
 
 				oao.Users = map[string]KC{
-					t.opts.User: {
+					b.opts.User: {
 						Key:  Key{PemPath: keyPem},
 						Cert: Cert{PemPath: certPem},
 					},
@@ -326,7 +344,7 @@ func (t *Builder) organizations(cc *parse.CryptoConfig) error {
 			}
 		}
 
-		t.Organizations[o] = oao
+		b.Organizations[o] = oao
 	}
 
 	// TODO:ordererorg 查看官方示例中配置中带排序节点配置此处待研究,以下内容需要待验证暂时先放这里
@@ -344,35 +362,35 @@ func (t *Builder) organizations(cc *parse.CryptoConfig) error {
 			log.Printf("[organizations] warn order org name not match:%s\n", name)
 		}
 
-		if _, ok := t.Organizations[o]; ok {
+		if _, ok := b.Organizations[o]; ok {
 			continue
 		}
 
-		mspId, ok := t.mspId.GetMspId(string(name))
+		mi, ok := b.mspId.GetMspId(string(name))
 		if !ok {
+			mi = "{待替换}"
 			log.Printf("[organizations] mspid not found %s\n", name)
-			mspId = "{待替换}"
 		}
-		oao.MspId = mspId
+		oao.MspId = mi
 
 		for domain, user := range order.Users {
-			if domain.UserName() == t.opts.User {
-				if t.opts.Pem {
+			if domain.UserName() == b.opts.User {
+				if b.opts.Pem {
 					oao.CryptoPath = fmt.Sprintf("peerOrganizations/%s/users/%s/msp", name, domain)
 					continue
 				}
 
-				keyPem, err = newPemPath(t.opts.Pem, user.Msp.KeyStore.Key)
+				keyPem, err = newPemPath(b.opts.Pem, user.Msp.KeyStore.Key)
 				if err != nil {
 					return fmt.Errorf("newPemPath:%w", err)
 				}
-				certPem, err = newPemPath(t.opts.Pem, user.Msp.SignCerts.Cert)
+				certPem, err = newPemPath(b.opts.Pem, user.Msp.SignCerts.Cert)
 				if err != nil {
 					return fmt.Errorf("newPemPath:%w", err)
 				}
 
 				oao.Users = map[string]KC{
-					t.opts.User: {
+					b.opts.User: {
 						Key:  Key{PemPath: keyPem},
 						Cert: Cert{PemPath: certPem},
 					},
@@ -380,7 +398,7 @@ func (t *Builder) organizations(cc *parse.CryptoConfig) error {
 			}
 		}
 		// todo:默认使用第一条数据当有多个order？
-		t.Organizations["ordererorg"] = oao
+		b.Organizations["ordererorg"] = oao
 		break
 	}
 
@@ -388,7 +406,7 @@ func (t *Builder) organizations(cc *parse.CryptoConfig) error {
 }
 
 // channel
-func (t *Builder) channel(cc *parse.CryptoConfig) error {
+func (b *Builder) channel(cc *parse.CryptoConfig) error {
 	var peer = make(map[string]PeerPolicy, 4)
 	for _, org := range cc.Orgs {
 		for domain := range org.Server {
@@ -404,7 +422,7 @@ func (t *Builder) channel(cc *parse.CryptoConfig) error {
 		}
 	}
 
-	t.Channels[t.opts.ChannelName] = ChannelPeer{
+	b.Channels[b.opts.ChannelName] = ChannelPeer{
 		Peer:   peer,
 		Policy: Policy{}, // todo: 考虑补充
 		//Order:  nil, // note: golang中早期配置中可以配置order通道但是后期v1.0.0sdk配置会提示废弃因此此处不生成
@@ -413,26 +431,26 @@ func (t *Builder) channel(cc *parse.CryptoConfig) error {
 }
 
 // order
-func (t *Builder) order(cc *parse.CryptoConfig) error {
+func (b *Builder) order(cc *parse.CryptoConfig) error {
 	for _, order := range cc.Order {
 		for domain := range order.Server {
-			if _, ok := t.Orderers[string(domain)]; ok {
+			if _, ok := b.Orderers[string(domain)]; ok {
 				continue
 			}
 
-			tlsCaCerts, err := newPemPath(t.opts.Pem, order.TLSCA.Cert)
+			tlsCaCerts, err := newPemPath(b.opts.Pem, order.TLSCA.Cert)
 			if err != nil {
 				return fmt.Errorf("newPemPath:%s", err)
 			}
 
 			var port = "${PORT}"
-			if h, ok := t.host.GetHost(string(domain)); !ok {
+			if h, ok := b.host.GetHost(string(domain)); !ok {
 				log.Printf("[order] not found port:%s", domain)
 			} else {
 				port = h.Port()
 			}
 
-			t.Orderers[string(domain)] = Payload{
+			b.Orderers[string(domain)] = Payload{
 				Url: fmt.Sprintf("%s:%s", domain, port),
 				GrpcOptions: GrpcOptions{
 					SSLTargetNameOverride: string(domain),
@@ -450,26 +468,26 @@ func (t *Builder) order(cc *parse.CryptoConfig) error {
 }
 
 // peers
-func (t *Builder) peers(cc *parse.CryptoConfig) error {
+func (b *Builder) peers(cc *parse.CryptoConfig) error {
 	for _, org := range cc.Orgs {
 		for domain := range org.Server {
-			if _, ok := t.Orderers[string(domain)]; ok {
+			if _, ok := b.Orderers[string(domain)]; ok {
 				continue
 			}
 
-			tlsCaCerts, err := newPemPath(t.opts.Pem, org.TLSCA.Cert)
+			tlsCaCerts, err := newPemPath(b.opts.Pem, org.TLSCA.Cert)
 			if err != nil {
 				return fmt.Errorf("newPemPath:%w", err)
 			}
 
 			var port = "${PORT}"
-			if h, ok := t.host.GetHost(string(domain)); !ok {
+			if h, ok := b.host.GetHost(string(domain)); !ok {
 				log.Printf("[order] not found port:%s", domain)
 			} else {
 				port = h.Port()
 			}
 
-			t.Peers[string(domain)] = Payload{
+			b.Peers[string(domain)] = Payload{
 				Url: fmt.Sprintf("%s:%s", domain, port),
 				GrpcOptions: GrpcOptions{
 					SSLTargetNameOverride: string(domain),
@@ -487,7 +505,7 @@ func (t *Builder) peers(cc *parse.CryptoConfig) error {
 }
 
 // entityMatchers
-func (t *Builder) entityMatchers(cc *parse.CryptoConfig) error {
+func (b *Builder) entityMatchers(cc *parse.CryptoConfig) error {
 	var (
 		peer  = make([]Matcher, 0, len(cc.Orgs)*2)
 		order = make([]Matcher, 0, len(cc.Order)*2)
@@ -496,7 +514,7 @@ func (t *Builder) entityMatchers(cc *parse.CryptoConfig) error {
 
 	for _, org := range cc.Orgs {
 		for domain := range org.Server {
-			url, ok := t.host.GetHost(string(domain))
+			url, ok := b.host.GetHost(string(domain))
 			if !ok {
 				log.Printf("[entityMatchers] not found host:%s\n", domain)
 				url = host.Host(domain)
@@ -514,7 +532,7 @@ func (t *Builder) entityMatchers(cc *parse.CryptoConfig) error {
 
 	for _, o := range cc.Order {
 		for domain := range o.Server {
-			url, ok := t.host.GetHost(string(domain))
+			url, ok := b.host.GetHost(string(domain))
 			if !ok {
 				log.Printf("[entityMatchers] not found host:%s\n", domain)
 				url = host.Host(domain)
@@ -544,26 +562,26 @@ func (t *Builder) entityMatchers(cc *parse.CryptoConfig) error {
 	//	}
 	//}
 
-	t.EntityMatchers.Peer = peer
-	t.EntityMatchers.Orderer = order
-	t.EntityMatchers.CertificateAuthority = ca
+	b.EntityMatchers.Peer = peer
+	b.EntityMatchers.Orderer = order
+	b.EntityMatchers.CertificateAuthority = ca
 	return nil
 }
 
 // certificateAuthorities
-func (t *Builder) certificateAuthorities(cc *parse.CryptoConfig) error {
+func (b *Builder) certificateAuthorities(cc *parse.CryptoConfig) error {
 
 	return nil
 }
 
 // operations
-func (t *Builder) operations(cc *parse.CryptoConfig) error {
+func (b *Builder) operations(cc *parse.CryptoConfig) error {
 
 	return nil
 }
 
 // metrics
-func (t *Builder) metrics(cc *parse.CryptoConfig) error {
+func (b *Builder) metrics(cc *parse.CryptoConfig) error {
 
 	return nil
 }

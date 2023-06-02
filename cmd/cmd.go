@@ -10,12 +10,11 @@ import (
 )
 
 type RootOpts struct {
-	Debug    bool   // 是否开启命令行debug模式
-	Input    string // 加载证书路径
-	Output   string // 生成文件路径
-	Stdout   bool   // 生成内容是否打印到标准数据中
-	Service  string // 生成链接服务的配置类型 normal:传统方式(默认) gateway:网关方式
-	FileType string // 生成文件类型 yaml(默认) json
+	Debug   bool   // 是否开启命令行debug模式
+	Input   string // 加载证书路径
+	Output  string // 生成文件路径
+	Stdout  bool   // 生成内容是否打印到标准数据中
+	Service string // 生成链接服务的配置类型 normal:传统方式(默认) gateway:网关方式
 	builder.Options
 	host.Config
 }
