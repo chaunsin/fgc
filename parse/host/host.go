@@ -1,6 +1,7 @@
 package host
 
 import (
+	"context"
 	"log"
 	"strings"
 )
@@ -13,20 +14,42 @@ type FetchHost interface {
 type Host string
 
 func (d Host) Port() string {
+	// 0.0.0.0:9051->9051/tcp
+	if p := strings.Split(string(d), "->"); len(p) == 2 {
+		if p := strings.Split(p[0], ":"); len(p) == 2 {
+			return p[1]
+		}
+	}
+
+	// 0.0.0.0:9051
 	if p := strings.Split(string(d), ":"); len(p) == 2 {
 		return p[1]
 	}
+
+	// 7051/tcp todo:
+
+	// :::9051->9051/tcp todo:
 	return "${PORT}"
 }
 
-// IP
-// TODO: IP需要二次解析
-// 1. 7051/tcp, 0.0.0.0:9051->9051/tcp, :::9051->9051/tcp
-// 2. 0.0.0.0:7050->7050/tcp, :::7050->7050/tcp
+// IP .
 func (d Host) IP() string {
+	// 0.0.0.0:9051->9051/tcp
+	if p := strings.Split(string(d), "->"); len(p) == 2 {
+		if p := strings.Split(p[0], ":"); len(p) == 2 {
+			return p[0]
+		}
+	}
+
+	// 0.0.0.0:9051
 	if p := strings.Split(string(d), ":"); len(p) == 2 {
 		return p[0]
 	}
+
+	// 7051/tcp todo:
+
+	// :::9051->9051/tcp todo:
+
 	return "${IP}"
 }
 
@@ -43,17 +66,19 @@ func StrToMap(raw string, sep string) map[string]string {
 	return resp
 }
 
-func New(mode string, cfg *Config) (FetchHost, error) {
+func New(ctx context.Context, mode string, cfg *Config) (FetchHost, error) {
 	var (
 		err  error
 		resp FetchHost
 	)
 	switch mode {
 	case "ftp":
-		// 执行docker 或者k8s等
+		// todo:
 	case "sftp":
-		// 执行docker 或者k8s等
-		resp, err = NewSSH(cfg)
+		resp, err = NewSSH(ctx, cfg)
+	default:
+		// 执行host解析
+		// resp, err = NewHostResolver(ctx)
 	}
 	if err != nil {
 		log.Printf("[host] New:%s\n", err)
@@ -61,10 +86,11 @@ func New(mode string, cfg *Config) (FetchHost, error) {
 	if err == nil && resp != nil {
 		return resp, nil
 	}
-	// 从docker中读取如果失败则讲解为本地默认值
-	resp, err = NewLocal()
+
+	// 从docker中尝试读取解析如果失败则使用本地默认值
+	resp, err = NewLocalDocker(ctx)
 	if err == nil {
 		return resp, nil
 	}
-	return NewDefault()
+	return NewDefault(ctx)
 }

@@ -1,8 +1,10 @@
 package host
 
+import "context"
+
 type hostResolver struct{}
 
-func NewHostResolver() (FetchHost, error) {
+func NewHostResolver(ctx context.Context) (FetchHost, error) {
 	return &hostResolver{}, nil
 }
 

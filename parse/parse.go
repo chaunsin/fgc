@@ -94,7 +94,7 @@ type User struct {
 type Org struct {
 	CA     Package
 	Msp    Msp
-	Server map[OrgDomain]*Serve // peer order
+	Server map[OrgDomain]*Serve // peer/order
 	TLSCA  Package
 	Users  map[UserDomain]*User
 }

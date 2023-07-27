@@ -1,5 +1,7 @@
 package host
 
+import "context"
+
 var (
 	defaultList = map[string]Host{
 		"peer0.org1.example.com": "0.0.0.0:7051",
@@ -18,7 +20,7 @@ var (
 
 type defaultHost struct{}
 
-func NewDefault() (FetchHost, error) {
+func NewDefault(ctx context.Context) (FetchHost, error) {
 	return &defaultHost{}, nil
 }
 

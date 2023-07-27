@@ -2,6 +2,7 @@ package builder
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -20,7 +21,7 @@ func New(c host.Config, o Options) *Builder {
 	if err != nil {
 		log.Fatalln("mspid:", err)
 	}
-	h, err := host.New(o.Mode, &c)
+	h, err := host.New(context.TODO(), o.Mode, &c)
 	if err != nil {
 		log.Fatalln("host:", err)
 	}
@@ -209,7 +210,7 @@ func (b *Builder) client(cc *parse.CryptoConfig) error {
 			}
 		}
 
-		// windows 不支持证书池
+		// windows go1.17版本不支持证书池
 		if runtime.GOARCH == "Windows" {
 			scp = false
 		}
@@ -228,10 +229,10 @@ func (b *Builder) client(cc *parse.CryptoConfig) error {
 }
 
 // organizations
-//#
-//# list of participating organizations in this network
-//#
-//organizations:
+// #
+// # list of participating organizations in this network
+// #
+// organizations:
 //  org1:
 //    # mspid 这个值在configtx.yaml中organizations作用域下面去寻找对应
 //    mspid: Org1MSP
@@ -286,7 +287,7 @@ func (b *Builder) organizations(cc *parse.CryptoConfig) error {
 			oao     OrgAndOrder
 			err     error
 			o       = string(name)
-			//o       = name.Org()
+			// o       = name.Org()
 		)
 
 		if o == "" {
@@ -306,7 +307,7 @@ func (b *Builder) organizations(cc *parse.CryptoConfig) error {
 		mi, ok := b.mspId.GetMspId(string(name))
 		if !ok {
 			mi = "{待替换}"
-			log.Printf("[organizations] mspid not found %s\n", name)
+			log.Printf("[organizations] mspid not found: %s\n", name)
 		}
 		oao.MspId = mi
 
@@ -359,7 +360,7 @@ func (b *Builder) organizations(cc *parse.CryptoConfig) error {
 
 		if o == "" {
 			o = string(name)
-			log.Printf("[organizations] warn order org name not match:%s\n", name)
+			log.Printf("[organizations] order org name not match: %s\n", name)
 		}
 
 		if _, ok := b.Organizations[o]; ok {
@@ -369,7 +370,7 @@ func (b *Builder) organizations(cc *parse.CryptoConfig) error {
 		mi, ok := b.mspId.GetMspId(string(name))
 		if !ok {
 			mi = "{待替换}"
-			log.Printf("[organizations] mspid not found %s\n", name)
+			log.Printf("[organizations] mspid not found: %s\n", name)
 		}
 		oao.MspId = mi
 
@@ -425,7 +426,7 @@ func (b *Builder) channel(cc *parse.CryptoConfig) error {
 	b.Channels[b.opts.ChannelName] = ChannelPeer{
 		Peer:   peer,
 		Policy: Policy{}, // todo: 考虑补充
-		//Order:  nil, // note: golang中早期配置中可以配置order通道但是后期v1.0.0sdk配置会提示废弃因此此处不生成
+		// Order:  nil, // note: golang中早期配置中可以配置order通道但是后期v1.0.0sdk配置会提示废弃因此此处不生成
 	}
 	return nil
 }
@@ -445,7 +446,7 @@ func (b *Builder) order(cc *parse.CryptoConfig) error {
 
 			var port = "${PORT}"
 			if h, ok := b.host.GetHost(string(domain)); !ok {
-				log.Printf("[order] not found port:%s", domain)
+				log.Printf("[order] not found port: %s", domain)
 			} else {
 				port = h.Port()
 			}
@@ -516,7 +517,7 @@ func (b *Builder) entityMatchers(cc *parse.CryptoConfig) error {
 		for domain := range org.Server {
 			url, ok := b.host.GetHost(string(domain))
 			if !ok {
-				log.Printf("[entityMatchers] not found host:%s\n", domain)
+				log.Printf("[entityMatchers] not found host: %s\n", domain)
 				url = host.Host(domain)
 			}
 			peer = append(peer, Matcher{
@@ -534,7 +535,7 @@ func (b *Builder) entityMatchers(cc *parse.CryptoConfig) error {
 		for domain := range o.Server {
 			url, ok := b.host.GetHost(string(domain))
 			if !ok {
-				log.Printf("[entityMatchers] not found host:%s\n", domain)
+				log.Printf("[entityMatchers] not found host: %s\n", domain)
 				url = host.Host(domain)
 			}
 			order = append(order, Matcher{
@@ -549,7 +550,7 @@ func (b *Builder) entityMatchers(cc *parse.CryptoConfig) error {
 	}
 
 	// todo:CertificateAuthority
-	//for _, order := range cc.Order {
+	// for _, order := range cc.Order {
 	//	for domain := range order.Server {
 	//		peer = append(peer, Matcher{
 	//			Pattern:                             fmt.Sprintf("(\\w*)%s(\\w*)", string(domain)), // todo:考虑正则规则
@@ -560,7 +561,7 @@ func (b *Builder) entityMatchers(cc *parse.CryptoConfig) error {
 	//			IgnoreEndpoint:                      false,
 	//		})
 	//	}
-	//}
+	// }
 
 	b.EntityMatchers.Peer = peer
 	b.EntityMatchers.Orderer = order

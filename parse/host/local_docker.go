@@ -16,26 +16,26 @@ type docker struct {
 	store map[string]string
 }
 
-// NewLocal 考虑使用docker api来实现此功能
-func NewLocal() (FetchHost, error) {
+// NewLocalDocker 考虑使用docker api来实现此功能
+func NewLocalDocker(ctx context.Context) (FetchHost, error) {
 	var (
 		dk     docker
 		stdout bytes.Buffer
 		stderr bytes.Buffer
 	)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
+	ctx, cancel := context.WithTimeout(ctx, time.Second*15)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, "bash", "-c", cmdArgs)
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {
-		log.Println("[NewLocal] GetMspId:", stderr.String())
-		return nil, fmt.Errorf("Run:%s", stderr.String())
+		log.Println("[NewLocalDocker] GetMspId:", stderr.String())
+		return nil, fmt.Errorf("Run: %s", stderr.String())
 	}
 	resp := stdout.String()
-	log.Printf("[NewLocal] stdout:\n%s\n", resp)
 	dk.store = StrToMap(resp, " ")
+	log.Printf("[NewLocalDocker] stdout:\n%sparse: %+v\n", resp, dk.store)
 	if len(dk.store) == 0 {
 		return nil, errors.New("is empty")
 	}

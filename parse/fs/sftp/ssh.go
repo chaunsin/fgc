@@ -11,10 +11,10 @@ type client struct {
 }
 
 func New(cfg Config) *client {
-	c := client{
+	cli := client{
 		c: cfg,
 	}
-	return &c
+	return &cli
 }
 
 func (c *client) Do() {

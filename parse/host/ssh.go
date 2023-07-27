@@ -2,6 +2,7 @@ package host
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -37,13 +38,13 @@ type SSH struct {
 	store map[string]string
 }
 
-func NewSSH(cfg *Config) (*SSH, error) {
+func NewSSH(ctx context.Context, cfg *Config) (*SSH, error) {
 	log.Printf("ssh config:%+v\n", cfg)
 	if err := cfg.Valid(); err != nil {
 		return nil, fmt.Errorf("Valid:%w", err)
 	}
 	var (
-		//pubKey ssh.PublicKey
+		// pubKey ssh.PublicKey
 		auth []ssh.AuthMethod
 	)
 	if cfg.Password != "" {
@@ -61,7 +62,7 @@ func NewSSH(cfg *Config) (*SSH, error) {
 		auth = append(auth, ssh.PublicKeys(signer))
 	}
 	if cfg.Gssapi != "" {
-		//auth = append(auth, ssh.GSSAPIWithMICAuthMethod())
+		// auth = append(auth, ssh.GSSAPIWithMICAuthMethod())
 	}
 
 	conf := &ssh.ClientConfig{
@@ -70,11 +71,11 @@ func NewSSH(cfg *Config) (*SSH, error) {
 		BannerCallback:  ssh.BannerDisplayStderr(),   // 错误显示到标准错误终端,可以自定义方法实现比如把错误信息写到文件中
 		Timeout:         time.Second * 15,            // 建立超时时间,0为永不超时
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(), // 貌似是限制指定秘钥类型
-		//HostKeyCallback:   ssh.FixedHostKey(pubKey),  // 貌似是限制指定秘钥类型
+		// HostKeyCallback:   ssh.FixedHostKey(pubKey),  // 貌似是限制指定秘钥类型
 	}
 	conn, err := ssh.Dial("tcp", cfg.Addr, conf)
 	if err != nil {
-		//return nil, fmt.Errorf("Dial:%w", err)
+		// return nil, fmt.Errorf("Dial:%w", err)
 		log.Fatalf("Dial:%s", err)
 	}
 
