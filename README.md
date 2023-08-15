@@ -11,7 +11,7 @@
 方式一
 
 ```shell
-go install https://github.com/chaunsin/fgc
+go install github.com/chaunsin/fgc@latest 
 ```
 
 此方式生成的`fgc`二进制可执行程序会放到$GOBIN目录下
@@ -21,7 +21,7 @@ go install https://github.com/chaunsin/fgc
 ```shell
 git clone https://github.com/chaunsin/fgc.git
 cd fgc
-make build
+make install
 ```
 
 执行完之后会在fgc目录下生成`fgc`可执行程序,如果有必要我们可以把fgc拷贝到自定一位置比如 /bin 目录下
@@ -40,7 +40,9 @@ fgc go
     - [x] 支持golang普通配置文件生成
     - [ ] 支持java普通配置文件生成
     - [ ] 支持nodejs普通配置文件生成
-- [x] 支持生成 yaml json配置文件
+- [ ] 配置文件格式
+  - [x] 支持生成yaml配置文件
+  - [ ] 支持生成json配置文件(目前能生成但是配置文件未必能使用)
 - [ ] 支持生成gateway链接配置文件
     - [ ] golang网关钱包配置生成
     - [ ] java网关钱包配置生成
@@ -58,7 +60,7 @@ fgc go
 
 # 问题
 
-由于fabric组件服务较多,配置复杂,天生自带分布式属性多机部署,在实际生成环境中会更加恶劣,因此此工具也面临着一些配置文件需要二次修改的问题,目前碰到的痛点有如下
+由于fabric组织节点服务较多,关系配置复杂,天生自带分布式属性多机部署,在实际环境中会更加恶劣,因此此工具也面临着一些配置文件需要二次修改的问题,目前碰到的痛点有如下
 
 1. mspid 不太容易获取
     1. docker命令方式获取
@@ -66,7 +68,7 @@ fgc go
     3. configtx.yaml
     4. 进入容器读取环境变量 CORE_PEER_LOCALMSPID
     5. 使用Discover服务来获取相关配置信息,但也面临着二次配置证书公私钥等信息
-2. 组织服务的真实ip、域名或端口获取问题
+2. 获取组织服务的真实ip、域名或端口问题
     1. 使用docker命令获取
        `docker ps --format "table{{.Image}}\t{{.Names}}\t{{.Ports}}" | grep "hyperledger/fabric-peer\|hyperledger/fabric-orderer" | awk '{print $2,$3}'`
 3. peer下面有两个组织每个组织有两个节点,但是每个组织只生成一个节点需要排查修改(貌似没问题)
