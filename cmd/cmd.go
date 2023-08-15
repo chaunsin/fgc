@@ -3,8 +3,8 @@ package cmd
 import (
 	"os"
 
-	"github.com/chaunsin/fabric-gen-config/builder"
-	"github.com/chaunsin/fabric-gen-config/parse/host"
+	"github.com/chaunsin/fgc/builder"
+	"github.com/chaunsin/fgc/parse/host"
 
 	"github.com/spf13/cobra"
 )

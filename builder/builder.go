@@ -9,9 +9,9 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/chaunsin/fabric-gen-config/parse"
-	"github.com/chaunsin/fabric-gen-config/parse/host"
-	"github.com/chaunsin/fabric-gen-config/parse/mspId"
+	"github.com/chaunsin/fgc/parse"
+	"github.com/chaunsin/fgc/parse/host"
+	"github.com/chaunsin/fgc/parse/mspId"
 
 	"gopkg.in/yaml.v3"
 )

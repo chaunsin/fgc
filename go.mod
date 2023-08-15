@@ -1,4 +1,4 @@
-module github.com/chaunsin/fabric-gen-config
+module github.com/chaunsin/fgc
 
 go 1.17
 

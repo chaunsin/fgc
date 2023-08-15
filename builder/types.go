@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/chaunsin/fabric-gen-config/parse"
-	"github.com/chaunsin/fabric-gen-config/parse/host"
-	"github.com/chaunsin/fabric-gen-config/parse/mspId"
+	"github.com/chaunsin/fgc/parse"
+	"github.com/chaunsin/fgc/parse/host"
+	"github.com/chaunsin/fgc/parse/mspId"
 )
 
 type Path struct {
@@ -58,8 +58,8 @@ type Bccsp struct {
 type PemPath struct {
 	Path         string `json:"path,omitempty" yaml:"path,omitempty"`
 	Pem          string `json:"pem,omitempty" yaml:"pem,omitempty"`
-	projectPath  string //${FABRIC_SDK_GO_PROJECT_PATH}
-	fixturesPath string //${CRYPTOCONFIG_FIXTURES_PATH}
+	projectPath  string // ${FABRIC_SDK_GO_PROJECT_PATH}
+	fixturesPath string // ${CRYPTOCONFIG_FIXTURES_PATH}
 	pem          bool
 }
 

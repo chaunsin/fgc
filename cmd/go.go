@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/chaunsin/fabric-gen-config/builder"
-	"github.com/chaunsin/fabric-gen-config/parse"
+	"github.com/chaunsin/fgc/builder"
+	"github.com/chaunsin/fgc/parse"
 
 	"github.com/spf13/cobra"
 )
