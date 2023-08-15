@@ -69,4 +69,4 @@ fgc go
 2. 组织服务的真实ip、域名或端口获取问题
     1. 使用docker命令获取
        `docker ps --format "table{{.Image}}\t{{.Names}}\t{{.Ports}}" | grep "hyperledger/fabric-peer\|hyperledger/fabric-orderer" | awk '{print $2,$3}'`
-3. 
+3. peer下面有两个组织每个组织有两个节点,但是每个组织只生成一个节点需要排查修改(貌似没问题)
