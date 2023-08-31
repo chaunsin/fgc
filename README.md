@@ -1,5 +1,7 @@
 # fgc(Fabric Generate Config)
 
+[![Qodana](https://github.com/chaunsin/fgc/actions/workflows/qodana_code_quality.yml/badge.svg?branch=master)](https://github.com/chaunsin/fgc/actions/workflows/qodana_code_quality.yml)
+
 由于fabric证书配置复杂编写配置容易搞错,本人想着便捷于是诞生了此工具,生成sdk链接配置文件.
 
 # 注意！！！
