@@ -31,7 +31,7 @@ func NewLocalDocker(ctx context.Context) (FetchHost, error) {
 	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {
 		log.Println("[NewLocalDocker] GetMspId:", stderr.String())
-		return nil, fmt.Errorf("Run: %s", stderr.String())
+		return nil, fmt.Errorf("run: %s", stderr.String())
 	}
 	resp := stdout.String()
 	dk.store = StrToMap(resp, " ")

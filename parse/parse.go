@@ -11,7 +11,6 @@ import (
 const (
 	orderPath = "ordererOrganizations"
 	peerPath  = "peerOrganizations"
-	caPath    = ""
 )
 
 type (
@@ -121,7 +120,7 @@ func (c *CryptoConfig) Valid() error {
 // GetOrgName 获取peer组织名称列表
 func (c *CryptoConfig) GetOrgName() []string {
 	var list = make([]string, 0, len(c.Orgs))
-	for name, _ := range c.Orgs {
+	for name := range c.Orgs {
 		list = append(list, string(name))
 	}
 	return list
@@ -130,7 +129,7 @@ func (c *CryptoConfig) GetOrgName() []string {
 // GetOrderName 获取order组织名称列表
 func (c *CryptoConfig) GetOrderName() []string {
 	var list = make([]string, 0, len(c.Order))
-	for name, _ := range c.Order {
+	for name := range c.Order {
 		list = append(list, string(name))
 	}
 	return list
@@ -139,7 +138,7 @@ func (c *CryptoConfig) GetOrderName() []string {
 // GetOrgUser 根据peer组织名称查询有哪些用户
 func (c *CryptoConfig) GetOrgUser(org string) []string {
 	var list = make([]string, 0, len(c.Orgs))
-	for domain, _ := range c.Orgs[OrgName(org)].Users {
+	for domain := range c.Orgs[OrgName(org)].Users {
 		list = append(list, domain.UserName())
 	}
 	return list
@@ -148,7 +147,7 @@ func (c *CryptoConfig) GetOrgUser(org string) []string {
 // GetOrderUser 根据order组织名称查询有哪些用户
 func (c *CryptoConfig) GetOrderUser(org string) []string {
 	var list = make([]string, 0, len(c.Orgs))
-	for domain, _ := range c.Order[OrgName(org)].Users {
+	for domain := range c.Order[OrgName(org)].Users {
 		list = append(list, domain.UserName())
 	}
 	return list
@@ -168,7 +167,7 @@ func Open(dir string, mode string) (*CryptoConfig, error) {
 		if dir == "./crypto-config" {
 			wd, err := os.Getwd()
 			if err != nil {
-				return nil, fmt.Errorf("Getwd:%w", err)
+				return nil, fmt.Errorf("getwd: %w", err)
 			}
 			dir = filepath.Join(wd, dir)
 		}

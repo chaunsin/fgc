@@ -7,9 +7,7 @@ type Config struct {
 
 func New(dir string) *Config {
 	return &Config{
-		Url: "114.217.31.201:37101",
+		Url: "0.0.0.0:8080",
 		Dir: dir,
 	}
 }
-
-

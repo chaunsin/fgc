@@ -43,13 +43,13 @@ func (s *golangCmd) generate() error {
 	// 根据模式读取文件
 	cc, err := parse.Open(opts.Input, opts.Mode)
 	if err != nil {
-		return fmt.Errorf("Open:%w", err)
+		return fmt.Errorf("open: %w", err)
 	}
 
 	// 模板对象
 	b := builder.New(opts.Config, opts.Options)
 	if err := b.Build(cc); err != nil {
-		return fmt.Errorf("Build: %w", err)
+		return fmt.Errorf("build: %w", err)
 	}
 	content, err := b.Content()
 	if err != nil {

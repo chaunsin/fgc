@@ -5,8 +5,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 	"time"
 
 	"golang.org/x/crypto/ssh"
@@ -41,7 +41,7 @@ type SSH struct {
 func NewSSH(ctx context.Context, cfg *Config) (*SSH, error) {
 	log.Printf("ssh config:%+v\n", cfg)
 	if err := cfg.Valid(); err != nil {
-		return nil, fmt.Errorf("Valid:%w", err)
+		return nil, fmt.Errorf("valid: %w", err)
 	}
 	var (
 		// pubKey ssh.PublicKey
@@ -51,7 +51,7 @@ func NewSSH(ctx context.Context, cfg *Config) (*SSH, error) {
 		auth = append(auth, ssh.RetryableAuthMethod(ssh.Password(cfg.Password), 1))
 	}
 	if cfg.PrivateKey != "" {
-		key, err := ioutil.ReadFile(cfg.PrivateKey)
+		key, err := os.ReadFile(cfg.PrivateKey)
 		if err != nil {
 			return nil, fmt.Errorf("ReadFile:%w", err)
 		}
@@ -93,7 +93,7 @@ func NewSSH(ctx context.Context, cfg *Config) (*SSH, error) {
 	session.Stderr = &stderr
 	if err := session.Run(cmdArgs); err != nil {
 		log.Printf("Run stderr:%s\n", stderr.String())
-		return nil, fmt.Errorf("Run:%s", stderr.String())
+		return nil, fmt.Errorf("run: %s", stderr.String())
 	}
 	resp := stdout.String()
 	log.Printf("[NewSSH] stdout:\n%s\n", resp)

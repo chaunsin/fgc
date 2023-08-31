@@ -6,12 +6,12 @@ type Config struct {
 	Private  string
 }
 
-type client struct {
+type Client struct {
 	c Config
 }
 
-func New(cfg Config) *client {
-	cli := client{
+func New(cfg Config) *Client {
+	cli := Client{
 		c: cfg,
 	}
 	return &cli

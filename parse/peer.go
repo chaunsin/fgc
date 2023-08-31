@@ -75,7 +75,7 @@ func msp(parent string, dir os.DirEntry, m *Msp) error {
 					return fmt.Errorf("ReadDir:%w", err)
 				}
 				if len(d) <= 0 {
-					//fmt.Println("msp/admincerts file <=0")
+					// fmt.Println("msp/admincerts file <=0")
 					continue
 				}
 				for _, v := range d {
@@ -189,7 +189,7 @@ func msp(parent string, dir os.DirEntry, m *Msp) error {
 			fmt.Printf("msp/%s is not used\n", v.Name())
 		}
 	}
-	//fmt.Printf("msp:%+v\n", m)
+	// fmt.Printf("msp:%+v\n", m)
 	return nil
 }
 

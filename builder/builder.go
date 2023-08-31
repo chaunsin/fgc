@@ -42,7 +42,7 @@ func New(c host.Config, o Options) *Builder {
 
 func (b *Builder) Build(cc *parse.CryptoConfig) error {
 	if err := cc.Valid(); err != nil {
-		return fmt.Errorf("Valid:%w", err)
+		return fmt.Errorf("valid: %w", err)
 	}
 
 	// client
@@ -121,7 +121,7 @@ func (b *Builder) YAML() ([]byte, error) {
 	defer enc.Close()
 	enc.SetIndent(2)
 	if err := enc.Encode(b); err != nil {
-		return nil, fmt.Errorf("Encode:%w", err)
+		return nil, fmt.Errorf("encode: %w", err)
 	}
 	return buf.Bytes(), nil
 }
@@ -171,7 +171,7 @@ func (b *Builder) client(cc *parse.CryptoConfig) error {
 
 	// 如果输入的组织名不存在则随机取一个组织名称
 	if _, ok := cc.Orgs[parse.OrgName(b.opts.OrgName)]; !ok {
-		for name, _ := range cc.Orgs {
+		for name := range cc.Orgs {
 			client.Organization = string(name)
 			break
 		}
@@ -233,51 +233,52 @@ func (b *Builder) client(cc *parse.CryptoConfig) error {
 // # list of participating organizations in this network
 // #
 // organizations:
-//  org1:
-//    # mspid 这个值在configtx.yaml中organizations作用域下面去寻找对应
-//    mspid: Org1MSP
 //
-//    # This org's MSP store (absolute path or relative to client.cryptoconfig)
-//    cryptoPath: peerOrganizations/org1.example.com/users/{username}@org1.example.com/msp
+//	org1:
+//	  # mspid 这个值在configtx.yaml中organizations作用域下面去寻找对应
+//	  mspid: Org1MSP
 //
-//    peers:
-//      - peer0.org1.example.com
-//      - peer1.org1.example.com
+//	  # This org's MSP store (absolute path or relative to client.cryptoconfig)
+//	  cryptoPath: peerOrganizations/org1.example.com/users/{username}@org1.example.com/msp
 //
-//    # [Optional]. Certificate Authorities issue certificates for identification purposes in a Fabric based
-//    # network. Typically certificates provisioning is done in a separate process outside of the
-//    # runtime network. Fabric-CA is a special certificate authority that provides a REST APIs for
-//    # dynamic certificate management (enroll, revoke, re-enroll). The following section is only for
-//    # Fabric-CA servers.
-//    certificateAuthorities:
-//      - ca.org1.example.com
-//      - tlsca.org1.example.com
+//	  peers:
+//	    - peer0.org1.example.com
+//	    - peer1.org1.example.com
 //
-//  # the profile will contain public information about organizations other than the one it belongs to.
-//  # These are necessary information to make transaction lifecycles work, including MSP IDs and
-//  # peers with a public URL to send transaction proposals. The file will not contain private
-//  # information reserved for members of the organization, such as admin key and certificate,
-//  # fabric-ca registrar enroll ID and secret, etc.
-//  org2:
-//    mspid: Org2MSP
+//	  # [Optional]. Certificate Authorities issue certificates for identification purposes in a Fabric based
+//	  # network. Typically certificates provisioning is done in a separate process outside of the
+//	  # runtime network. Fabric-CA is a special certificate authority that provides a REST APIs for
+//	  # dynamic certificate management (enroll, revoke, re-enroll). The following section is only for
+//	  # Fabric-CA servers.
+//	  certificateAuthorities:
+//	    - ca.org1.example.com
+//	    - tlsca.org1.example.com
 //
-//    # This org's MSP store (absolute path or relative to client.cryptoconfig)
-//    cryptoPath: peerOrganizations/org2.example.com/users/{username}@org2.example.com/msp
+//	# the profile will contain public information about organizations other than the one it belongs to.
+//	# These are necessary information to make transaction lifecycles work, including MSP IDs and
+//	# peers with a public URL to send transaction proposals. The file will not contain private
+//	# information reserved for members of the organization, such as admin key and certificate,
+//	# fabric-ca registrar enroll ID and secret, etc.
+//	org2:
+//	  mspid: Org2MSP
 //
-//    peers:
-//      - peer0.org2.example.com
-//      - peer1.org2.example.com
+//	  # This org's MSP store (absolute path or relative to client.cryptoconfig)
+//	  cryptoPath: peerOrganizations/org2.example.com/users/{username}@org2.example.com/msp
 //
-//    certificateAuthorities:
-//      - ca.org2.example.com
+//	  peers:
+//	    - peer0.org2.example.com
+//	    - peer1.org2.example.com
 //
-//  # Orderer Org name
-//  ordererorg:
-//    # Membership Service Provider ID for this organization
-//    mspID: OrdererMSP
+//	  certificateAuthorities:
+//	    - ca.org2.example.com
 //
-//    # Needed to load users crypto keys and certs for this org (absolute path or relative to global crypto path, DEV mode)
-//    cryptoPath: ordererOrganizations/example.com/users/{username}@example.com/msp
+//	# Orderer Org name
+//	ordererorg:
+//	  # Membership Service Provider ID for this organization
+//	  mspID: OrdererMSP
+//
+//	  # Needed to load users crypto keys and certs for this org (absolute path or relative to global crypto path, DEV mode)
+//	  cryptoPath: ordererOrganizations/example.com/users/{username}@example.com/msp
 func (b *Builder) organizations(cc *parse.CryptoConfig) error {
 	for name, org := range cc.Orgs {
 		var (
