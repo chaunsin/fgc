@@ -2,7 +2,7 @@
 
 [![Qodana](https://github.com/chaunsin/fgc/actions/workflows/qodana_code_quality.yml/badge.svg?branch=master)](https://github.com/chaunsin/fgc/actions/workflows/qodana_code_quality.yml)
 
-由于fabric证书配置复杂编写配置容易搞错,本人想着便捷于是诞生了此工具,生成sdk链接配置文件.
+由于fabric证书配置复杂编写配置容易搞错,本人想着便捷于是诞生了此工具,用于生成sdk链接配置文件.
 
 # 注意！！！
 
@@ -26,14 +26,21 @@ cd fgc
 make install
 ```
 
-执行完之后会在fgc目录下生成`fgc`可执行程序,如果有必要我们可以把fgc拷贝到自定一位置比如 /bin 目录下
+执行之后会在fgc目录下生成`fgc`可执行文件,如果有必要我们可以把可执行文件拷贝到自定义位置比如`/bin`目录下
 
 # 使用
 
-生成golang配置证书
+生成fabric-sdk-go sdk链接配置证书
 
 ```shell
-fgc go
+# tips: crypto-config为fabric证书目录
+fgc go -i ./crypto-config
+```
+
+帮助
+
+```shell
+fgc -h
 ```
 
 # 功能
@@ -43,8 +50,8 @@ fgc go
     - [ ] 支持java普通配置文件生成
     - [ ] 支持nodejs普通配置文件生成
 - [ ] 配置文件格式
-  - [x] 支持生成yaml配置文件
-  - [ ] 支持生成json配置文件(目前能生成但是配置文件未必能使用)
+    - [x] 支持生成yaml配置文件
+    - [ ] 支持生成json配置文件(目前能生成但是配置文件未必能使用)
 - [ ] 支持生成gateway链接配置文件
     - [ ] golang网关钱包配置生成
     - [ ] java网关钱包配置生成

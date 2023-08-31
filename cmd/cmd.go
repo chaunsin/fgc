@@ -28,7 +28,7 @@ func New() *Cmd {
 	c := &Cmd{
 		root: &cobra.Command{
 			Use:     "fgc",
-			Example: "fgc golang",
+			Example: "fgc golang -i ./crypto-config",
 		},
 	}
 	c.addFlags()
@@ -41,21 +41,21 @@ func New() *Cmd {
 func (c *Cmd) addFlags() {
 	c.root.PersistentFlags().BoolVar(&c.RootOpts.Debug, "debug", false, "")
 	c.root.PersistentFlags().StringVarP(&c.RootOpts.Input, "input", "i", defaultString("FABRIC_CFG_PATH", "./crypto-config"), "gen [command] -i ./crypto-config")
-	c.root.PersistentFlags().StringVarP(&c.RootOpts.Output, "output", "p", "./", "")
+	c.root.PersistentFlags().StringVarP(&c.RootOpts.Output, "output", "p", "./", "Generate file directory location")
 	c.root.PersistentFlags().BoolVar(&c.RootOpts.Stdout, "stdout", false, "")
-	c.root.PersistentFlags().StringVarP(&c.RootOpts.FileType, "type", "t", "yaml", "")
+	c.root.PersistentFlags().StringVarP(&c.RootOpts.FileType, "type", "t", "yaml", "Generated file type")
 	c.root.PersistentFlags().StringVarP(&c.RootOpts.Service, "service", "s", "normal", "")
 	c.root.PersistentFlags().BoolVar(&c.RootOpts.Pem, "pem", false, "")
-	c.root.PersistentFlags().BoolVar(&c.RootOpts.DoubleTls, "tls", false, "")
+	c.root.PersistentFlags().BoolVar(&c.RootOpts.DoubleTls, "tls", false, "Whether to enable bidirectional TLS authentication. The default value is unidirectional")
 	c.root.PersistentFlags().BoolVar(&c.RootOpts.CA, "ca", false, "")
 	c.root.PersistentFlags().BoolVar(&c.RootOpts.Metrics, "metrics", false, "")
 	c.root.PersistentFlags().BoolVar(&c.RootOpts.Operations, "operations", false, "")
-	c.root.PersistentFlags().StringVarP(&c.RootOpts.OrgName, "org", "o", "org1", "")
-	c.root.PersistentFlags().StringVarP(&c.RootOpts.OrderName, "order", "O", "order", "")
-	c.root.PersistentFlags().StringVarP(&c.RootOpts.ChannelName, "channel", "c", "mychannel", "")
-	c.root.PersistentFlags().StringVarP(&c.RootOpts.User, "user", "u", "Admin", "")
+	c.root.PersistentFlags().StringVarP(&c.RootOpts.OrgName, "org", "o", "org1", "Organization name")
+	c.root.PersistentFlags().StringVarP(&c.RootOpts.OrderName, "order", "O", "order", "Orderer name")
+	c.root.PersistentFlags().StringVarP(&c.RootOpts.ChannelName, "channel", "c", "mychannel", "The name of the channel used")
+	c.root.PersistentFlags().StringVarP(&c.RootOpts.User, "user", "u", "Admin", "The user name used")
 	c.root.PersistentFlags().StringVarP(&c.RootOpts.Mode, "mode", "m", "local", "local,sftp,ftp")
-	c.root.PersistentFlags().StringVarP(&c.RootOpts.Addr, "host", "H", "", "")
+	c.root.PersistentFlags().StringVarP(&c.RootOpts.Addr, "host", "H", "", "Service ip address or domain name")
 	c.root.PersistentFlags().StringVarP(&c.RootOpts.Username, "username", "U", "root", "")
 	c.root.PersistentFlags().StringVarP(&c.RootOpts.Password, "password", "P", "", "")
 	c.root.PersistentFlags().StringVarP(&c.RootOpts.PrivateKey, "key", "k", ".ssh/key.pem", "")

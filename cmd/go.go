@@ -23,7 +23,7 @@ func newGolangCmd(c *Cmd) *cobra.Command {
 	}
 	s.cmd = &cobra.Command{
 		Use:   "go",
-		Short: "golang",
+		Short: "Generate fabric-sdk-go config file",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.generate()
 		},
