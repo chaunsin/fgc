@@ -26,7 +26,7 @@ cd fgc
 make install
 ```
 
-执行之后会在fgc目录下生成`fgc`可执行文件,如果有必要我们可以把可执行文件拷贝到自定义位置比如`/bin`目录下
+执行之后会在fgc目录下生成`fgc`可执行文件,推荐放入到全局可引导的目录位置比如`/usr/local/bin`目录下
 
 # 使用
 
@@ -52,7 +52,7 @@ fgc -h
 - [ ] 配置文件格式
     - [x] 支持生成yaml配置文件
     - [ ] 支持生成json配置文件(目前能生成但是配置文件未必能使用)
-- [ ] 支持生成gateway链接配置文件
+- [ ] 支持生成gateway连接配置文件
     - [ ] golang网关钱包配置生成
     - [ ] java网关钱包配置生成
     - [ ] nodejs网关钱包配置生成
@@ -61,10 +61,10 @@ fgc -h
 
 细节功能：
 
-- [x] 可控制生成双tls认证方式
-- [ ] 可控制生成 Metrics Operations CA配置作用于模块配置
+- [x] 可控制生成双tls认证连接方式
+- [ ] 生成 Metrics Operations CA模块配置
 - [ ] 可控生成文件是硬编码方式还是路径方式,以及golang环境魔法变量${FABRIC_SDK_GO_PROJECT_PATH}/${CRYPTOCONFIG_FIXTURES_PATH}
-- [ ] 可以支持魔法变量导入路径或者参数例如$(pwd)或者${pwd}
+- [ ] 支持魔法变量导入路径或者参数例如:$(pwd)或者${pwd}
 - [ ] 增加配置注释内容
 
 # 问题
@@ -72,11 +72,11 @@ fgc -h
 由于fabric组织节点服务较多,关系配置复杂,天生自带分布式属性多机部署,在实际环境中会更加恶劣,因此此工具也面临着一些配置文件需要二次修改的问题,目前碰到的痛点有如下
 
 1. mspid 不太容易获取
-    1. docker命令方式获取
-    2. 配置区块中获取
-    3. configtx.yaml
-    4. 进入容器读取环境变量 CORE_PEER_LOCALMSPID
-    5. 使用Discover服务来获取相关配置信息,但也面临着二次配置证书公私钥等信息
+    1. docker命令方式获取?
+    2. 配置区块中获取?
+    3. configtx.yaml?
+    4. 进入容器读取环境变量 CORE_PEER_LOCALMSPID?
+    5. 使用Discover服务来获取相关配置信息,但也面临着二次配置证书公私钥等信息?
 2. 获取组织服务的真实ip、域名或端口问题
     1. 使用docker命令获取
        `docker ps --format "table{{.Image}}\t{{.Names}}\t{{.Ports}}" | grep "hyperledger/fabric-peer\|hyperledger/fabric-orderer" | awk '{print $2,$3}'`
